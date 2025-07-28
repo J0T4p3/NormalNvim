@@ -1,1 +1,2 @@
-/lua/base/git-ignored
+plugin
+.aider*
