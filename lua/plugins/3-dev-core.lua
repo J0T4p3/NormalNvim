@@ -450,7 +450,6 @@ return {
           path = "nvim-highlight-colors",
           mods = { "nvim-highlight-colors" },
         },
-        { path = "nvim-java", mods = { "java" } },
         { path = "nvim-lspconfig", mods = { "lspconfig" } },
         { path = "mason-lspconfig.nvim", mods = { "mason-lspconfig" } },
         {
@@ -506,16 +505,7 @@ return {
         { path = "cmp-dap", mods = { "cmp_dap" } },
         { path = "mason-nvim-dap.nvim", mods = { "mason-nvim-dap" } },
         { path = "one-small-step-for-vimkind", mods = { "osv" } },
-        { path = "neotest-dart", mods = { "neotest-dart" } },
-        { path = "neotest-dotnet", mods = { "neotest-dotnet" } },
-        { path = "neotest-elixir", mods = { "neotest-elixir" } },
         { path = "neotest-golang", mods = { "neotest-golang" } },
-        { path = "neotest-java", mods = { "neotest-java" } },
-        { path = "neotest-jest", mods = { "neotest-jest" } },
-        { path = "neotest-phpunit", mods = { "neotest-phpunit" } },
-        { path = "neotest-python", mods = { "neotest-python" } },
-        { path = "neotest-rust", mods = { "neotest-rust" } },
-        { path = "neotest-zig", mods = { "neotest-zig" } },
         { path = "nvim-coverage.nvim", mods = { "coverage" } },
         { path = "gutentags_plus", mods = { "gutentags_plus" } }, -- has vimscript
         { path = "vim-gutentags", mods = { "vim-gutentags" } }, -- has vimscript

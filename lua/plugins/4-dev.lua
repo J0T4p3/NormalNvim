@@ -66,19 +66,10 @@ return {
         { "vscode", "snipmate", "lua" }
       )
       -- friendly-snippets - enable standardized comments snippets
-      require("luasnip").filetype_extend("typescript", { "tsdoc" })
-      require("luasnip").filetype_extend("javascript", { "jsdoc" })
       require("luasnip").filetype_extend("lua", { "luadoc" })
       require("luasnip").filetype_extend("python", { "pydoc" })
-      require("luasnip").filetype_extend("rust", { "rustdoc" })
-      require("luasnip").filetype_extend("cs", { "csharpdoc" })
-      require("luasnip").filetype_extend("java", { "javadoc" })
-      require("luasnip").filetype_extend("c", { "cdoc" })
-      require("luasnip").filetype_extend("cpp", { "cppdoc" })
-      require("luasnip").filetype_extend("php", { "phpdoc" })
-      require("luasnip").filetype_extend("kotlin", { "kdoc" })
-      require("luasnip").filetype_extend("ruby", { "rdoc" })
       require("luasnip").filetype_extend("sh", { "shelldoc" })
+      require("go").filetype_extend("go", { "godoc" })
     end,
   },
 
@@ -313,38 +304,38 @@ return {
   --  NOTE: In order for this plugin to work, you will have to set
   --        the next env var in your OS:
   --        OPENAI_API_KEY="my_key_here"
-  {
-    "dense-analysis/neural",
-    cmd = { "Neural" },
-    config = function()
-      require("neural").setup {
-        source = {
-          openai = {
-            api_key = vim.env.OPENAI_API_KEY,
-          },
-        },
-        ui = {
-          prompt_icon = require("base.utils").get_icon("PromptPrefix"),
-        },
-      }
-    end,
-  },
+
+  --   "dense-analysis/neural",
+  --   cmd = { "Neural" },
+  --   config = function()
+  --     require("neural").setup {
+  --       source = {
+  --         openai = {
+  --           api_key = vim.env.OPENAI_API_KEY,
+  --         },
+  --       },
+  --       ui = {
+  --         prompt_icon = require("base.utils").get_icon("PromptPrefix"),
+  --       },
+  --     }
+  --   end,
+  -- },
 
   --  copilot [github code suggestions]
   --  https://github.com/github/copilot.vim
   --  As alternative to chatgpt, you can use copilot uncommenting this.
   --  Then you must run :Copilot setup
-  -- {
-  --   "github/copilot.vim",
-  --   event = "User BaseFile"
-  -- },
+  {
+    "github/copilot.vim",
+    event = "User BaseFile"
+  },
   -- copilot-cmp
   -- https://github.com/zbirenbaum/copilot-cmp
-  -- {
-  --   "zbirenbaum/copilot-cmp",
-  --   opts = { suggesion = { enabled = false }, panel = { enabled = false } },
-  --   config = function (_, opts) require("copilot_cmp").setup(opts) end
-  -- },
+  {
+    "zbirenbaum/copilot-cmp",
+    opts = { suggesion = { enabled = false }, panel = { enabled = false } },
+    config = function (_, opts) require("copilot_cmp").setup(opts) end
+  },
 
   -- [guess-indent]
   -- https://github.com/NMAC427/guess-indent.nvim
@@ -443,16 +434,6 @@ return {
         },
       }
 
-      -- F#
-      dap.configurations.fsharp = dap.configurations.cs
-
-      -- Visual basic dotnet
-      dap.configurations.vb = dap.configurations.cs
-
-      -- Java
-      -- Note: The java debugger jdtls is automatically spawned and configured
-      -- by the plugin 'nvim-java' in './3-dev-core.lua'.
-
       -- Python
       dap.adapters.python = {
         type = 'executable',
@@ -478,67 +459,6 @@ return {
           request = 'attach',
           name = "Attach to running Neovim instance",
           program = function() pcall(require "osv".launch({ port = 8086 })) end,
-        }
-      }
-
-      -- C
-      dap.adapters.codelldb = {
-        type = 'server',
-        port = "${port}",
-        executable = {
-          command = vim.fn.stdpath('data') .. '/mason/bin/codelldb',
-          args = { "--port", "${port}" },
-          detached = function() if is_windows then return false else return true end end,
-        }
-      }
-      dap.configurations.c = {
-        {
-          name = 'Launch',
-          type = 'codelldb',
-          request = 'launch',
-          program = function() -- Ask the user what executable wants to debug
-            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/bin/program', 'file')
-          end,
-          cwd = '${workspaceFolder}',
-          stopOnEntry = false,
-          args = {},
-        },
-      }
-
-      -- C++
-      dap.configurations.cpp = dap.configurations.c
-
-      -- Rust
-      dap.configurations.rust = {
-        {
-          name = 'Launch',
-          type = 'codelldb',
-          request = 'launch',
-          program = function() -- Ask the user what executable wants to debug
-            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/bin/program', 'file')
-          end,
-          cwd = '${workspaceFolder}',
-          stopOnEntry = false,
-          args = {},
-          initCommands = function() -- add rust types support (optional)
-            -- Find out where to look for the pretty printer Python module
-            local rustc_sysroot = vim.fn.trim(vim.fn.system('rustc --print sysroot'))
-
-            local script_import = 'command script import "' .. rustc_sysroot .. '/lib/rustlib/etc/lldb_lookup.py"'
-            local commands_file = rustc_sysroot .. '/lib/rustlib/etc/lldb_commands'
-
-            local commands = {}
-            local file = io.open(commands_file, 'r')
-            if file then
-              for line in file:lines() do
-                table.insert(commands, line)
-              end
-              file:close()
-            end
-            table.insert(commands, 1, script_import)
-
-            return commands
-          end,
         }
       }
 
@@ -569,102 +489,6 @@ return {
           program = "./${relativeFileDirname}"
         },
       }
-
-      -- Dart / Flutter
-      dap.adapters.dart = {
-        type = 'executable',
-        command = vim.fn.stdpath('data') .. '/mason/bin/dart-debug-adapter',
-        args = { 'dart' }
-      }
-      dap.adapters.flutter = {
-        type = 'executable',
-        command = vim.fn.stdpath('data') .. '/mason/bin/dart-debug-adapter',
-        args = { 'flutter' }
-      }
-      dap.configurations.dart = {
-        {
-          type = "dart",
-          request = "launch",
-          name = "Launch dart",
-          dartSdkPath = "/opt/flutter/bin/cache/dart-sdk/", -- ensure this is correct
-          flutterSdkPath = "/opt/flutter",                  -- ensure this is correct
-          program = "${workspaceFolder}/lib/main.dart",     -- ensure this is correct
-          cwd = "${workspaceFolder}",
-        },
-        {
-          type = "flutter",
-          request = "launch",
-          name = "Launch flutter",
-          dartSdkPath = "/opt/flutter/bin/cache/dart-sdk/", -- ensure this is correct
-          flutterSdkPath = "/opt/flutter",                  -- ensure this is correct
-          program = "${workspaceFolder}/lib/main.dart",     -- ensure this is correct
-          cwd = "${workspaceFolder}",
-        }
-      }
-
-      -- Kotlin
-      -- Kotlin projects have very weak project structure conventions.
-      -- You must manually specify what the project root and main class are.
-      dap.adapters.kotlin = {
-        type = 'executable',
-        command = vim.fn.stdpath('data') .. '/mason/bin/kotlin-debug-adapter',
-      }
-      dap.configurations.kotlin = {
-        {
-          type = 'kotlin',
-          request = 'launch',
-          name = 'Launch kotlin program',
-          projectRoot = "${workspaceFolder}/app",     -- ensure this is correct
-          mainClass = "AppKt",                        -- ensure this is correct
-        },
-      }
-
-      -- Javascript / Typescript (firefox)
-      dap.adapters.firefox = {
-        type = 'executable',
-        command = vim.fn.stdpath('data') .. '/mason/bin/firefox-debug-adapter',
-      }
-      dap.configurations.typescript = {
-        {
-          name = 'Debug with Firefox',
-          type = 'firefox',
-          request = 'launch',
-          reAttach = true,
-          url = 'http://localhost:4200', -- Write the actual URL of your project.
-          webRoot = '${workspaceFolder}',
-          firefoxExecutable = '/usr/bin/firefox'
-        }
-      }
-      dap.configurations.javascript = dap.configurations.typescript
-      dap.configurations.javascriptreact = dap.configurations.typescript
-      dap.configurations.typescriptreact = dap.configurations.typescript
-
-      -- Javascript / Typescript (chromium)
-      -- If you prefer to use this adapter, comment the firefox one.
-      -- But to use this adapter, you must manually run one of these two, first:
-      -- * chromium --remote-debugging-port=9222 --user-data-dir=remote-profile
-      -- * google-chrome-stable --remote-debugging-port=9222 --user-data-dir=remote-profile
-      -- After starting the debugger, you must manually reload page to get all features.
-      -- dap.adapters.chrome = {
-      --  type = 'executable',
-      --  command = vim.fn.stdpath('data')..'/mason/bin/chrome-debug-adapter',
-      -- }
-      -- dap.configurations.typescript = {
-      --  {
-      --   name = 'Debug with Chromium',
-      --   type = "chrome",
-      --   request = "attach",
-      --   program = "${file}",
-      --   cwd = vim.fn.getcwd(),
-      --   sourceMaps = true,
-      --   protocol = "inspector",
-      --   port = 9222,
-      --   webRoot = "${workspaceFolder}"
-      --  }
-      -- }
-      -- dap.configurations.javascript = dap.configurations.typescript
-      -- dap.configurations.javascriptreact = dap.configurations.typescript
-      -- dap.configurations.typescriptreact = dap.configurations.typescript
 
       -- PHP
       dap.adapters.php = {
@@ -708,34 +532,12 @@ return {
         }
       }
 
-      -- Elixir
-      dap.adapters.mix_task = {
-        type = 'executable',
-        command = vim.fn.stdpath("data") .. '/mason/bin/elixir-ls-debugger',
-        args = {}
-      }
-      dap.configurations.elixir = {
-        {
-          type = "mix_task",
-          name = "mix test",
-          task = 'test',
-          taskArgs = { "--trace" },
-          request = "launch",
-          startApps = true, -- for Phoenix projects
-          projectDir = "${workspaceFolder}",
-          requireFiles = {
-            "test/**/test_helper.exs",
-            "test/**/*_test.exs"
-          }
-        },
-      }
     end, -- of dap config
     dependencies = {
       "rcarriga/nvim-dap-ui",
       "rcarriga/cmp-dap",
       "jay-babu/mason-nvim-dap.nvim",
       "jbyuki/one-small-step-for-vimkind",
-      "nvim-java/nvim-java",
     },
   },
 
@@ -804,31 +606,17 @@ return {
     "nvim-neotest/neotest",
     cmd = { "Neotest" },
     dependencies = {
-      "sidlatau/neotest-dart",
-      "Issafalcon/neotest-dotnet",
-      "jfpedroza/neotest-elixir",
       "fredrikaverpil/neotest-golang",
-      "rcasia/neotest-java",
-      "nvim-neotest/neotest-jest",
       "olimorris/neotest-phpunit",
       "nvim-neotest/neotest-python",
-      "rouge8/neotest-rust",
-      "lawrence-laz/neotest-zig",
     },
     opts = function()
       return {
         -- your neotest config here
         adapters = {
-          require("neotest-dart"),
-          require("neotest-dotnet"),
-          require("neotest-elixir"),
           require("neotest-golang"),
-          require("neotest-java"),
-          require("neotest-jest"),
           require("neotest-phpunit"),
           require("neotest-python"),
-          require("neotest-rust"),
-          require("neotest-zig"),
         },
       }
     end,
