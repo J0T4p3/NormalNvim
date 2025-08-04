@@ -69,7 +69,6 @@ return {
       require("luasnip").filetype_extend("lua", { "luadoc" })
       require("luasnip").filetype_extend("python", { "pydoc" })
       require("luasnip").filetype_extend("sh", { "shelldoc" })
-      require("go").filetype_extend("go", { "godoc" })
     end,
   },
 
@@ -187,7 +186,7 @@ return {
     config = function(_, opts)
       require("aerial").setup(opts)
       -- HACK: The first time you open aerial on a session, close all folds.
-      vim.api.nvim_create_autocmd({"FileType", "BufEnter"}, {
+      vim.api.nvim_create_autocmd({ "FileType", "BufEnter" }, {
         desc = "Aerial: When aerial is opened, close all its folds.",
         callback = function()
           local is_aerial = vim.bo.filetype == "aerial"
@@ -211,11 +210,11 @@ return {
     opts = {
       notify = { enabled = false },
       tree = {
-          icon_set = "default" -- "nerd", "codicons", "default", "simple"
+        icon_set = "default" -- "nerd", "codicons", "default", "simple"
       },
       panel = {
-          orientation = "bottom",
-          panel_size = 10,
+        orientation = "bottom",
+        panel_size = 10,
       },
     },
     config = function(_, opts)
@@ -248,8 +247,10 @@ return {
               vim.wo.colorcolumn = "0"
               vim.wo.foldcolumn = "0"
               vim.cmd("silent! PinBuffer") -- stickybuf.nvim
-              vim.cmd("silent! hi LTSymbolJump ctermfg=015 ctermbg=110 cterm=italic,bold,underline guifg=#464646 guibg=#87afd7 gui=italic,bold")
-              vim.cmd("silent! hi LTSymbolJumpRefs ctermfg=015 ctermbg=110 cterm=italic,bold,underline guifg=#464646 guibg=#87afd7 gui=italic,bold")
+              vim.cmd(
+                "silent! hi LTSymbolJump ctermfg=015 ctermbg=110 cterm=italic,bold,underline guifg=#464646 guibg=#87afd7 gui=italic,bold")
+              vim.cmd(
+                "silent! hi LTSymbolJumpRefs ctermfg=015 ctermbg=110 cterm=italic,bold,underline guifg=#464646 guibg=#87afd7 gui=italic,bold")
             else
               vim.cmd("silent! highlight clear LTSymbolJump")
               vim.cmd("silent! highlight clear LTSymbolJumpRefs")
@@ -334,7 +335,7 @@ return {
   {
     "zbirenbaum/copilot-cmp",
     opts = { suggesion = { enabled = false }, panel = { enabled = false } },
-    config = function (_, opts) require("copilot_cmp").setup(opts) end
+    config = function(_, opts) require("copilot_cmp").setup(opts) end
   },
 
   -- [guess-indent]
@@ -384,7 +385,7 @@ return {
       "OverseerClearCache"
     },
     opts = {
-     task_list = { -- the window that shows the results.
+      task_list = { -- the window that shows the results.
         direction = "bottom",
         min_height = 25,
         max_height = 25,
@@ -531,7 +532,6 @@ return {
           terminalKind = "integrated",
         }
       }
-
     end, -- of dap config
     dependencies = {
       "rcarriga/nvim-dap-ui",
@@ -683,8 +683,11 @@ return {
         desc = "Auto generate C/C++ tags",
         callback = function()
           local is_c = vim.bo.filetype == "c" or vim.bo.filetype == "cpp"
-          if is_c then vim.g.gutentags_enabled = 1
-          else vim.g.gutentags_enabled = 0 end
+          if is_c then
+            vim.g.gutentags_enabled = 1
+          else
+            vim.g.gutentags_enabled = 0
+          end
         end,
       })
     end,

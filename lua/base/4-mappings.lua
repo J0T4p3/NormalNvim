@@ -1304,11 +1304,12 @@ if is_available("markdown-preview.nvim") or is_available("markmap.nvim") or is_a
   end
 end
 
--- [neural] -----------------------------------------------------------------
+
+-- [copilot] -----------------------------------------------------------------
 if is_available("neural") or is_available("copilot") then
   maps.n["<leader>a"] = {
-    function() require("neural").prompt() end,
-    desc = "Ask chatgpt",
+    function() require("copilot.nvim").prompt() end,
+    desc = "Ask copilot",
   }
 end
 
@@ -1355,21 +1356,34 @@ function M.lsp_mappings(client, bufnr)
 
   -- Diagnostics
   lsp_mappings.n["<leader>ld"] = { function() vim.diagnostic.open_float() end, desc = "Hover diagnostics" }
-  lsp_mappings.n["[d"] = { function()
+  lsp_mappings.n["[d"] = {
+    function()
       -- TODO: Delete after dropping nvim 0.10 support.
-      if vim.fn.has('nvim-0.11') == 1 then vim.diagnostic.jump({ count = -1 })
-      else vim.diagnostic.goto_prev() end end, desc = "Previous diagnostic"
+      if vim.fn.has('nvim-0.11') == 1 then
+        vim.diagnostic.jump({ count = -1 })
+      else
+        vim.diagnostic.goto_prev()
+      end
+    end,
+    desc = "Previous diagnostic"
   }
-  lsp_mappings.n["]d"] = { function()
-    -- TODO: Delete after dropping nvim 0.10 support.
-    if vim.fn.has('nvim-0.11') == 1 then vim.diagnostic.jump({ count = 1 })
-    else vim.diagnostic.goto_next() end end, desc = "Next diagnostic" }
+  lsp_mappings.n["]d"] = {
+    function()
+      -- TODO: Delete after dropping nvim 0.10 support.
+      if vim.fn.has('nvim-0.11') == 1 then
+        vim.diagnostic.jump({ count = 1 })
+      else
+        vim.diagnostic.goto_next()
+      end
+    end,
+    desc = "Next diagnostic"
+  }
 
   -- Diagnostics
   lsp_mappings.n["gl"] = { function() vim.diagnostic.open_float() end, desc = "Hover diagnostics" }
   if is_available("telescope.nvim") then
     lsp_mappings.n["<leader>lD"] =
-      { function() require("telescope.builtin").diagnostics() end, desc = "Diagnostics" }
+    { function() require("telescope.builtin").diagnostics() end, desc = "Diagnostics" }
   end
 
   -- LSP info
@@ -1446,7 +1460,7 @@ function M.lsp_mappings(client, bufnr)
     autoformat.ignore_filetypes or {}
   ) or not vim.tbl_contains(autoformat.ignore_filetypes, filetype)
 
-if is_autoformat_enabled and is_filetype_allowed and is_filetype_ignored then
+  if is_autoformat_enabled and is_filetype_allowed and is_filetype_ignored then
     utils.add_autocmds_to_buffer("lsp_auto_format", bufnr, {
       events = "BufWritePre", -- Trigger before save
       desc = "Autoformat on save",
