@@ -5,9 +5,10 @@ opt.number = true
 opt.relativenumber = true
 
 -- Tabs & indentation
-opt.tabstop = 4
-opt.shiftwidth = 4
-opt.expandtab = false -- Go uses tabs
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.showmatch = true
 
 -- Search
 opt.ignorecase = true
@@ -28,3 +29,7 @@ opt.incsearch = true
 opt.scrolloff = 8
 opt.sidescrolloff = 8
 opt.mouse = "a"
+opt.clipboard = "unnamedplus" -- uses the clipboard register for all operations except yank.
+opt.inccommand = "split" 
+opt.splitright = true
+opt.splitbelow = true
