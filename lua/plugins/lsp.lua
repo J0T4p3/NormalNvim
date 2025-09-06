@@ -90,7 +90,6 @@ return {
             on_attach = function(client, bufnr)
               -- Disable semantic highlighting (optional)
               -- client.server_capabilities.semanticTokensProvider = nil
-              
               -- Auto-organize imports on save
               if client.supports_method("textDocument/codeAction") then
                 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -146,7 +145,39 @@ return {
             },
           })
         end,
+
+        -- Custom handler for TypeScript
+        ["tsserver"] = function()
+          lspconfig.tsserver.setup({
+            capabilities = capabilities,
+            settings = {
+              typescript = {
+                inlayHints = {
+                  includeInlayParameterNameHints = "all",
+                  includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                  includeInlayFunctionParameterTypeHints = true,
+                  includeInlayVariableTypeHints = true,
+                  includeInlayPropertyDeclarationTypeHints = true,
+                  includeInlayFunctionLikeReturnTypeHints = true,
+                  includeInlayEnumMemberValueHints = true,
+                },
+              },
+              javascript = {
+                inlayHints = {
+                  includeInlayParameterNameHints = "all",
+                  includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                  includeInlayFunctionParameterTypeHints = true,
+                  includeInlayVariableTypeHints = true,
+                  includeInlayPropertyDeclarationTypeHints = true,
+                  includeInlayFunctionLikeReturnTypeHints = true,
+                  includeInlayEnumMemberValueHints = true,
+                },
+              },
+            },
+          })
+        end,
       })
+
 
       -- Global LSP keymaps
       vim.api.nvim_create_autocmd("LspAttach", {
@@ -164,14 +195,14 @@ return {
           vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
           vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
           
-          -- Actions
-          vim.keymap.set("n", "<leader>gn", vim.lsp.buf.rename, opts)
-          vim.keymap.set("n", "<leader>ga", vim.lsp.buf.code_action, opts)
-          vim.keymap.set("v", "<leader>ga", vim.lsp.buf.code_action, opts)
-          vim.keymap.set("n", "<leader>gf", function()
+                   -- Actions
+          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+          vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+          vim.keymap.set("v", "<leader>ca", vim.lsp.buf.code_action, opts)
+          vim.keymap.set("n", "<leader>f", function()
             vim.lsp.buf.format({ async = true })
           end, opts)
-          
+
           -- Diagnostics
           vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
           vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
