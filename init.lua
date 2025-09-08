@@ -20,6 +20,22 @@ require("config.options")
 require("config.keymaps")
 require("config.autocmds")
 
+-- PHP specific configuration
+require("config.php-config").setup()
+
+-- PHP custom ColorScheme
+vim.api.nvim_create_autocmd("ColorScheme", {
+  pattern = "*",
+  callback = function()
+    -- Custom PHP variable highlighting
+    vim.api.nvim_set_hl(0, "phpVariable", { fg = "#e06c75", italic = true })
+    -- Custom PHP function highlighting  
+    vim.api.nvim_set_hl(0, "phpFunction", { fg = "#61afef", bold = true })
+    -- Custom PHP class highlighting
+    vim.api.nvim_set_hl(0, "phpClass", { fg = "#e5c07b", bold = true })
+  end,
+})
+
 require("lazy").setup({
   spec = {
     { import = "plugins" },
