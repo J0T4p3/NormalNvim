@@ -156,7 +156,6 @@ function M.setup_keymaps()
       -- === PHP Debugging ===
       keymap("n", "<leader>pdb", "ivar_dump();<Left><Left>", { buffer = true, desc = "Insert var_dump" })
       keymap("n", "<leader>pdd", "idd();<Left><Left>", { buffer = true, desc = "Insert dd()" })
-      keymap("n", "<leader>pr", "iray();<Left><Left>", { buffer = true, desc = "Insert ray()" })
       
       -- === PHP Refactoring (works with LSP) ===
       keymap("n", "<leader>piu", function()
@@ -176,26 +175,7 @@ function M.setup_keymaps()
           apply = true,
         })
       end, { buffer = true, desc = "Sort use statements" })
-      
-      -- === PHP Namespace shortcuts ===
-      keymap("i", "ns", "namespace ", opts)
-      keymap("i", "use", "use ", opts)
-      keymap("i", "pub", "public ", opts)
-      keymap("i", "pri", "private ", opts)
-      keymap("i", "pro", "protected ", opts)
-      keymap("i", "sta", "static ", opts)
-      keymap("i", "abs", "abstract ", opts)
-      keymap("i", "fin", "final ", opts)
-      keymap("i", "con", "const ", opts)
-      keymap("i", "ret", "return ", opts)
-      keymap("i", "thi", "this->", opts)
-      keymap("i", "sel", "self::", opts)
-      keymap("i", "par", "parent::", opts)
-      
-      -- === PHP Array shortcuts ===
-      keymap("i", "arr", "array()", { buffer = true })
-      keymap("i", "=>", " => ", opts)
-      
+
       -- === Quick semicolon ===
       keymap("i", "<C-;>", "<End>;", opts)
       keymap("n", "<leader>;", "A;<Esc>", { buffer = true, desc = "Add semicolon at end of line" })
