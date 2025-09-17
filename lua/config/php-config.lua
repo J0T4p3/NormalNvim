@@ -126,11 +126,6 @@ function M.setup_keymaps()
       
       -- === PHP Code Generation ===
       keymap("i", "<?", "<?php ", opts)
-      keymap("i", "eco", "echo ", opts)
-      keymap("i", "vd", "var_dump();<Left><Left>", opts)
-      keymap("i", "dd", "dd();<Left><Left>", opts) -- Laravel helper
-      keymap("i", "dump", "dump();<Left><Left>", opts) -- Laravel helper
-      keymap("i", "ray", "ray();<Left><Left>", opts) -- Ray debugging
       
       -- === PHP Class/Function Navigation ===
       keymap("n", "<leader>pf", function()

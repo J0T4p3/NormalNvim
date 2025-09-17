@@ -17,8 +17,6 @@ return {
       })
     end,
   },
-
-  -- Tool installer for PHP ecosystem
   {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     dependencies = { "williamboman/mason.nvim" },
@@ -27,37 +25,29 @@ return {
       require("mason-tool-installer").setup({
         ensure_installed = {
           -- PHP Language Server
-          "intelephense",        -- Premium PHP LSP (best option)
-          -- "phpactor",         -- Alternative PHP LSP (free)
-          
+          "phpactor",         -- Alternative PHP LSP (free)
           -- PHP Code Quality & Analysis
           "phpstan",             -- Static analysis
           "psalm",               -- Static analysis (alternative/additional)
           "php-cs-fixer",        -- Code formatter (PSR standards)
           "phpcbf",             -- PHP Code Beautifier and Fixer
           "phpcs",              -- PHP Code Sniffer
-          
           -- PHP Debugging
           "php-debug-adapter",   -- Debug adapter for DAP
-          
           -- Laravel/Framework specific
           "blade-formatter",     -- Laravel Blade templates
-          
           -- Web Technologies (often used with PHP)
           "html-lsp",           -- HTML language server
           "css-lsp",            -- CSS language server
           "emmet-ls",           -- Emmet support
           "tailwindcss-language-server", -- Tailwind CSS
-          
           -- JavaScript/TypeScript (for full-stack PHP)
           "typescript-language-server",
           "prettier",           -- Code formatter
           "eslint_d",          -- Fast ESLint daemon
-          
           -- JSON/YAML support
           "json-lsp",
           "yaml-language-server",
-          
           -- Other languages you mentioned
           "gopls",              -- Go
           "lua-language-server", -- Lua
@@ -83,35 +73,15 @@ return {
     config = function()
       local mason_lspconfig = require("mason-lspconfig")
       local lspconfig = require("lspconfig")
-      
       -- Get capabilities from nvim-cmp
       local cmp_nvim_lsp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
       local capabilities = cmp_nvim_lsp_ok and cmp_nvim_lsp.default_capabilities() or {}
-      
-      -- Enhanced capabilities for PHP development
-      capabilities.textDocument.completion.completionItem = {
-        documentationFormat = { "markdown", "plaintext" },
-        snippetSupport = true,
-        preselectSupport = true,
-        insertReplaceSupport = true,
-        labelDetailsSupport = true,
-        deprecatedSupport = true,
-        commitCharactersSupport = true,
-        tagSupport = { valueSet = { 1 } },
-        resolveSupport = {
-          properties = {
-            "documentation",
-            "detail",
-            "additionalTextEdits",
-          },
-        },
-      }
 
       -- Wait for mason to be ready
       vim.defer_fn(function()
         mason_lspconfig.setup({
           ensure_installed = {
-            "intelephense",  -- PHP
+            "phpactor",      -- PHP
             "html",          -- HTML
             "cssls",         -- CSS
             "emmet_ls",      -- Emmet
@@ -134,139 +104,53 @@ return {
             })
           end,
 
-          -- PHP (Intelephense) - Comprehensive configuration
-          ["intelephense"] = function()
-            lspconfig.intelephense.setup({
+          -- PHP (Phpactor) - Comprehensive configuration
+          ["phpactor"] = function()
+            lspconfig.phpactor.setup({
               capabilities = capabilities,
+              filetypes = { "php" },
+              root_dir = lspconfig.util.root_pattern(
+                "composer.json",
+                ".git",
+                "index.php"
+              ),
+
               settings = {
-                intelephense = {
-                  -- File associations
-                  files = {
-                    maxSize = 5000000, -- 5MB max file size
-                    associations = { "*.php", "*.phtml", "*.php3", "*.php4", "*.php5", "*.phps" },
+                phpactor = {
+                  language_server_phpstan_enabled = false, -- disable phpstan integration unless needed
+                  language_server_psalm_enabled = false,   -- disable psalm integration unless needed
+                  index = {
+                    enabled = true,
+                    path = vim.fn.stdpath("cache") .. "/phpactor/index", -- store index in nvim cache
                     exclude = {
-                      "**/node_modules/**",
-                      "**/vendor/**/Tests/**",
-                      "**/vendor/**/tests/**",
-                      "**/vendor/**/test/**",
-                      "**/storage/framework/views/*.php",
-                      "**/bootstrap/cache/*.php",
-                      "**/.git/**",
-                      "**/tmp/**",
-                      "**/temp/**",
+                      "vendor/**/Tests/**",
+                      "vendor/**/tests/**",
+                      "vendor/**/test/**",
+                      "storage/framework/views/*.php",
+                      "bootstrap/cache/*.php",
+                      "node_modules/**",
+                      ".git/**",
+                      "tmp/**",
+                      "temp/**",
                     },
                   },
-                  
-                  -- Stubs for better completion (common PHP extensions)
-                  stubs = {
-                    "apache", "bcmath", "bz2", "calendar", "com_dotnet", "Core", "ctype", "curl", "date",
-                    "dba", "dom", "enchant", "exif", "FFI", "fileinfo", "filter", "fpm", "ftp", "gd",
-                    "gettext", "gmp", "hash", "iconv", "imap", "intl", "json", "ldap", "libxml",
-                    "mbstring", "meta", "mysqli", "oci8", "odbc", "openssl", "pcntl", "pcre",
-                    "PDO", "pdo_ibm", "pdo_mysql", "pdo_pgsql", "pdo_sqlite", "pgsql", "Phar",
-                    "posix", "pspell", "readline", "Reflection", "session", "shmop", "SimpleXML",
-                    "snmp", "soap", "sockets", "sodium", "SPL", "sqlite3", "standard", "superglobals",
-                    "sysvmsg", "sysvsem", "sysvshm", "tidy", "tokenizer", "xml", "xmlreader",
-                    "xmlrpc", "xmlwriter", "xsl", "Zend OPcache", "zip", "zlib",
-                    -- Framework stubs
-                    "wordpress", "laravel", "symfony", "phpunit", "pest"
-                  },
-                  
-                  -- Environment configuration
-                  environment = {
-                    includePaths = { "vendor/", "app/", "src/", "lib/" },
-                    documentRoot = "",
-                    shortOpenTag = false,
-                  },
-                  
-                  -- Completion settings
                   completion = {
-                    insertUseDeclaration = true,
-                    fullyQualifyGlobalConstantsAndFunctions = false,
-                    triggerParameterHints = true,
-                    maxItems = 100,
+                    limit = 100,
+                    resolve = true,
+                    insertUse = true, -- auto-insert `use` statements
                   },
-                  
-                  -- Format settings
-                  format = {
-                    enable = true,
-                    braces = "psr12", -- PSR-12 brace style
-                  },
-                  
-                  -- Diagnostic settings
                   diagnostics = {
                     enable = true,
-                    run = "onType",
-                    embeddedLanguages = true,
-                    undefinedSymbols = true,
-                    undefinedFunctions = true,
-                    undefinedConstants = true,
-                    undefinedClassConstants = true,
-                    undefinedMethods = true,
-                    undefinedProperties = true,
-                    undefinedTypes = true,
-                    unusedSymbols = true,
                   },
-                  
-                  -- PhpDoc settings
-                  phpDoc = {
-                    returnVoid = false,
-                    textFormat = "snippet",
-                  },
-                  
-                  -- Indexing settings
-                  indexing = {
-                    maxFileSize = 5000000,
-                  },
-                  
-                  -- Trace settings (for debugging)
-                  trace = {
-                    server = "off", -- Set to "verbose" for debugging
+                  workspace = {
+                    symbol_search = true,
                   },
                 },
               },
-              
-              -- Custom on_attach for PHP-specific features
-              on_attach = function(client, bufnr)
-                -- Enable auto-formatting on save
-                if client.supports_method("textDocument/formatting") then
-                  vim.api.nvim_create_autocmd("BufWritePre", {
-                    group = vim.api.nvim_create_augroup("PhpLspFormat", { clear = true }),
-                    buffer = bufnr,
-                    callback = function()
-                      vim.lsp.buf.format({
-                        async = false,
-                        timeout_ms = 2000,
-                      })
-                    end,
-                  })
-                end
 
-                -- PHP-specific keymaps
-                local opts = { buffer = bufnr, silent = true }
-                vim.keymap.set("n", "<leader>pi", function()
-                  vim.lsp.buf.code_action({
-                    filter = function(action)
-                      return action.title:find("Import") or action.title:find("use")
-                    end,
-                    apply = true,
-                  })
-                end, { buffer = bufnr, desc = "PHP: Import class" })
-                
-                vim.keymap.set("n", "<leader>ps", function()
-                  vim.lsp.buf.code_action({
-                    filter = function(action)
-                      return action.title:find("Sort")
-                    end,
-                    apply = true,
-                  })
-                end, { buffer = bufnr, desc = "PHP: Sort imports" })
-              end,
-
-              -- Custom initialization options
               init_options = {
-                storagePath = vim.fn.stdpath("cache") .. "/intelephense",
-                globalStoragePath = vim.fn.stdpath("cache") .. "/intelephense",
+                ["language_server_configuration.auto_configure"] = true,
+                ["language_server_phpactor.logging"] = false,
               },
             })
           end,
@@ -281,6 +165,8 @@ return {
                   format = {
                     enable = true,
                     indentInnerHtml = true,
+                      wrapLineLength = 80,
+                      wrapAttributes = "force-aligned", -- options: "auto", "force", "force-aligned", "force-expand-multiline"
                   },
                 },
               },
@@ -389,6 +275,18 @@ return {
                       indent_size = "2",
                     },
                   },
+                  on_attach = function(client, bufnr)
+                    -- enable format on save
+                    if client.server_capabilities.documentFormattingProvider then
+                      vim.api.nvim_create_autocmd("BufWritePre", {
+                        group = vim.api.nvim_create_augroup("FormatOnSave", { clear = true }),
+                        buffer = bufnr,
+                        callback = function()
+                          vim.lsp.buf.format({ bufnr = bufnr })
+                        end,
+                      })
+                    end
+                  end,
                 },
               },
             })
@@ -399,7 +297,6 @@ return {
         vim.api.nvim_create_autocmd("LspAttach", {
           callback = function(ev)
             local opts = { buffer = ev.buf, silent = true }
-            
             -- Navigation
             vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
             vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
@@ -419,9 +316,8 @@ return {
             vim.keymap.set("n", "<leader>f", function()
               vim.lsp.buf.format({ async = true })
             end, opts)
-            
             -- Diagnostics
-            vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, opts)
+            vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
             vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
             vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
             vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, opts)
@@ -471,7 +367,20 @@ return {
       end, 200) -- 200ms delay to ensure mason is ready
     end,
   },
-
+{
+    "jose-elias-alvarez/null-ls.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      local null_ls = require("null-ls")
+      null_ls.setup({
+        sources = {
+          null_ls.builtins.formatting.prettier.with({
+            extra_args = { "--print-width", "80", "--html-whitespace-sensitivity", "ignore" },
+          }),
+        },
+      })
+    end,
+  },
   -- LSP Configuration (standalone for manual servers)
   {
     "neovim/nvim-lspconfig",

@@ -6,18 +6,15 @@ return {
     dependencies = {
       -- LSP completion source
       "hrsh7th/cmp-nvim-lsp",
-      
       -- Additional completion sources
       "hrsh7th/cmp-buffer",      -- Buffer completions
       "hrsh7th/cmp-path",        -- Path completions
       "hrsh7th/cmp-cmdline",     -- Command line completions
       "hrsh7th/cmp-nvim-lua",    -- Neovim Lua API
-      
       -- Snippet engine and completions
       "L3MON4D3/LuaSnip",
       "saadparwaiz1/cmp_luasnip",
       "rafamadriz/friendly-snippets", -- Snippet collection
-      
       -- PHP-specific completion enhancements
       "hrsh7th/cmp-nvim-lsp-signature-help", -- Function signatures
       "hrsh7th/cmp-nvim-lsp-document-symbol", -- Document symbols
@@ -25,41 +22,8 @@ return {
     config = function()
       local cmp = require("cmp")
       local luasnip = require("luasnip")
-      
       -- Load friendly snippets
       require("luasnip.loaders.from_vscode").lazy_load()
-      
-      -- Custom PHP snippets
-      luasnip.add_snippets("php", {
-        luasnip.snippet("class", {
-          luasnip.text_node("<?php"),
-          luasnip.text_node({"", "", "class "}),
-          luasnip.insert_node(1, "ClassName"),
-          luasnip.text_node({"", "{", "    "}),
-          luasnip.insert_node(0),
-          luasnip.text_node({"", "}"}),
-        }),
-        
-        luasnip.snippet("method", {
-          luasnip.text_node("public function "),
-          luasnip.insert_node(1, "methodName"),
-          luasnip.text_node("("),
-          luasnip.insert_node(2),
-          luasnip.text_node(")"),
-          luasnip.text_node({"", "{", "    "}),
-          luasnip.insert_node(0),
-          luasnip.text_node({"", "}"}),
-        }),
-        
-        luasnip.snippet("construct", {
-          luasnip.text_node("public function __construct("),
-          luasnip.insert_node(1),
-          luasnip.text_node(")"),
-          luasnip.text_node({"", "{", "    "}),
-          luasnip.insert_node(0),
-          luasnip.text_node({"", "}"}),
-        }),
-      })
 
       cmp.setup({
         snippet = {
@@ -67,7 +31,6 @@ return {
             luasnip.lsp_expand(args.body)
           end,
         },
-        
         window = {
           completion = cmp.config.window.bordered({
             border = "rounded",
@@ -78,28 +41,22 @@ return {
             winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
           }),
         },
-        
         mapping = cmp.mapping.preset.insert({
           -- Navigate completion items
           ["<C-k>"] = cmp.mapping.select_prev_item(),
           ["<C-j>"] = cmp.mapping.select_next_item(),
-          
           -- Scroll documentation
           ["<C-b>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          
           -- Trigger completion
           ["<C-Space>"] = cmp.mapping.complete(),
-          
           -- Close completion
           ["<C-e>"] = cmp.mapping.abort(),
-          
           -- Confirm selection
           ["<CR>"] = cmp.mapping.confirm({ 
             behavior = cmp.ConfirmBehavior.Replace,
             select = false 
           }),
-          
           -- Enhanced Tab behavior
           ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
@@ -110,7 +67,6 @@ return {
               fallback()
             end
           end, { "i", "s" }),
-          
           ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
@@ -121,7 +77,6 @@ return {
             end
           end, { "i", "s" }),
         }),
-        
         sources = cmp.config.sources({
           -- High priority sources
           { name = "nvim_lsp", priority = 1000 },
@@ -135,7 +90,6 @@ return {
           -- Low priority sources (only when others don't match)
           { name = "nvim_lsp_document_symbol", priority = 300, keyword_length = 3 },
         }),
-        
         formatting = {
           fields = { "kind", "abbr", "menu" },
           format = function(entry, vim_item)
@@ -167,9 +121,7 @@ return {
               Operator = "󰆕",
               TypeParameter = "",
             }
-            
             vim_item.kind = string.format("%s %s", icons[vim_item.kind] or "", vim_item.kind)
-            
             -- Source indicators
             vim_item.menu = ({
               nvim_lsp = "[LSP]",
@@ -180,28 +132,23 @@ return {
               nvim_lsp_document_symbol = "[Sym]",
               nvim_lua = "[Lua]",
             })[entry.source.name] or "[?]"
-            
             -- Truncate long items
             if string.len(vim_item.abbr) > 40 then
               vim_item.abbr = string.sub(vim_item.abbr, 1, 37) .. "..."
             end
-            
             return vim_item
           end,
         },
-        
         experimental = {
           ghost_text = {
             hl_group = "Comment",
           },
         },
-        
         -- PHP-specific completion behavior
         completion = {
           keyword_length = 1,
           keyword_pattern = [[\k\+]],
         },
-        
         -- Better matching for PHP
         matching = {
           disallow_fuzzy_matching = false,
@@ -242,7 +189,6 @@ return {
     event = "InsertEnter",
     config = function()
       local autopairs = require("nvim-autopairs")
-      
       autopairs.setup({
         check_ts = true, -- Enable treesitter integration
         ts_config = {
@@ -265,11 +211,9 @@ return {
         map_c_h = false,
         map_c_w = false,
       })
-      
       -- PHP-specific rules
       local Rule = require("nvim-autopairs.rule")
       local cond = require("nvim-autopairs.conds")
-      
       -- PHP opening tags
       autopairs.add_rules({
         Rule("<?", "?>", "php"):with_pair(cond.not_after_regex("%w")),
@@ -287,7 +231,6 @@ return {
     },
     config = function()
       local ls = require("luasnip")
-      
       ls.config.set_config({
         history = true,
         updateevents = "TextChanged,TextChangedI",
@@ -307,20 +250,17 @@ return {
           return vim.split(vim.bo.filetype, ".", { plain = true })
         end,
       })
-      
       -- Keymaps for snippet navigation
       vim.keymap.set({"i", "s"}, "<C-l>", function()
         if ls.expand_or_jumpable() then
           ls.expand_or_jump()
         end
       end, { silent = true, desc = "Expand or jump snippet" })
-      
       vim.keymap.set({"i", "s"}, "<C-h>", function()
         if ls.jumpable(-1) then
           ls.jump(-1)
         end
       end, { silent = true, desc = "Jump back in snippet" })
-      
       vim.keymap.set("i", "<C-k>", function()
         if ls.choice_active() then
           ls.change_choice(1)
